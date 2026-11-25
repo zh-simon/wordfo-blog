@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: zh-simon/personal-blog
+  repo: zh-simon/wordfo-blog
   branch: main
   auth_methods: [token]
 
