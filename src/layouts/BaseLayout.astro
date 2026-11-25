@@ -1,0 +1,55 @@
+---
+import '../styles/global.css';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = SITE_TITLE, description = SITE_DESCRIPTION } = Astro.props;
+const path = Astro.url.pathname;
+const links = [
+  { href: '/', label: '首页' },
+  { href: '/blog', label: '文章' },
+  { href: '/tags', label: '标签' },
+  { href: '/about', label: '关于' },
+  { href: '/admin', label: '管理' },
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title === SITE_TITLE ? title : `${title} · ${SITE_TITLE}`}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/">{SITE_TITLE}</a>
+        <nav class="nav">
+          {links.map((link) => (
+            <a
+              href={link.href}
+              aria-current={path === link.href || (link.href !== '/' && path.startsWith(link.href)) ? 'page' : undefined}
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </header>
+    <main class="wrap">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        © {new Date().getFullYear()} {SITE_TITLE} · <a href="/rss.xml">RSS</a>
+      </div>
+    </footer>
+  </body>
+</html>

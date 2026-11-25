@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getPublishedPosts } from '../../lib/posts';
+
+const posts = await getPublishedPosts();
+---
+
+<BaseLayout title="文章">
+  <section class="hero">
+    <h1>全部文章</h1>
+    <p>共 {posts.length} 篇</p>
+  </section>
+  {posts.length > 0 ? (
+    <ul class="post-list">
+      {posts.map((post) => <PostCard post={post} />)}
+    </ul>
+  ) : (
+    <p class="empty">还没有文章。</p>
+  )}
+</BaseLayout>

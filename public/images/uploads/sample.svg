@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320">
+  <rect width="640" height="320" fill="#eff6ff"/>
+  <circle cx="110" cy="90" r="42" fill="#bfdbfe"/>
+  <path d="M0 260 L180 140 L300 240 L420 170 L640 290 L640 320 L0 320 Z" fill="#93c5fd"/>
+  <text x="320" y="60" text-anchor="middle" font-family="sans-serif" font-size="28" fill="#1e40af">图片上传测试</text>
+</svg>

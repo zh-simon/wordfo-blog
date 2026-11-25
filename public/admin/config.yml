@@ -1,0 +1,33 @@
+backend:
+  name: github
+  repo: zh-simon/personal-blog
+  branch: main
+  auth_methods: [token]
+
+media_folder: public/images/uploads
+public_folder: /images/uploads
+
+collections:
+  - name: posts
+    label: 文章
+    label_singular: 文章
+    folder: src/content/posts
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: 标题, name: title, widget: string }
+      - { label: 摘要, name: description, widget: text }
+      - { label: 发布日期, name: pubDate, widget: datetime, type: date }
+      - { label: 标签, name: tags, widget: list }
+      - { label: 草稿, name: draft, widget: boolean, default: false }
+      - { label: 正文, name: body, widget: markdown }
+
+  - name: pages
+    label: 页面
+    label_singular: 页面
+    folder: src/content/pages
+    create: true
+    fields:
+      - { label: 标题, name: title, widget: string }
+      - { label: 摘要, name: description, widget: text }
+      - { label: 正文, name: body, widget: markdown }
