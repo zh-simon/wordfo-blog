@@ -4,11 +4,19 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { formatDate } from '../../lib/posts';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts', ({ data }) => !data.draft);
-  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+  const posts = (await getCollection('posts', ({ data }) => !data.draft))
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  return posts.map((post, i) => ({
+    params: { id: post.id },
+    props: {
+      post,
+      newer: i > 0 ? posts[i - 1] : null,
+      older: i < posts.length - 1 ? posts[i + 1] : null,
+    },
+  }));
 }
 
-const { post } = Astro.props;
+const { post, newer, older } = Astro.props;
 const { Content } = await render(post);
 ---
 
@@ -35,6 +43,23 @@ const { Content } = await render(post);
     <div class="article-body">
       <Content />
     </div>
-    <p style="margin-top:3rem;"><a class="back-link" href="/blog/">← 返回文章列表</a></p>
+    <p style="margin-top:2.5rem;"><a class="back-link" href="/blog/">← 返回文章列表</a></p>
+
+    {(newer || older) && (
+      <nav class="post-nav" aria-label="文章导航">
+        {newer ? (
+          <a class="post-nav-item" href={`/blog/${newer.id}/`}>
+            <span class="post-nav-label">← 更新的</span>
+            <span class="post-nav-title">{newer.data.title}</span>
+          </a>
+        ) : <span class="post-nav-empty" aria-hidden="true"></span>}
+        {older ? (
+          <a class="post-nav-item next" href={`/blog/${older.id}/`}>
+            <span class="post-nav-label">更早的 →</span>
+            <span class="post-nav-title">{older.data.title}</span>
+          </a>
+        ) : <span class="post-nav-empty" aria-hidden="true"></span>}
+      </nav>
+    )}
   </article>
 </BaseLayout>

@@ -8,8 +8,8 @@ export async function getPublishedPosts(): Promise<CollectionEntry<'posts'>[]> {
 export function formatDate(date: Date): string {
   return new Intl.DateTimeFormat('zh-CN', {
     year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+    month: 'long',
+    day: 'numeric',
     timeZone: 'UTC',
   }).format(date);
 }

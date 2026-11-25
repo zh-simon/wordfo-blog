@@ -1,20 +1,24 @@
 ---
 import '../styles/global.css';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL, AUTHOR } from '../consts';
 
 interface Props {
   title?: string;
   description?: string;
+  ogImage?: string;
 }
 
-const { title = SITE_TITLE, description = SITE_DESCRIPTION } = Astro.props;
+const { title, description = SITE_DESCRIPTION, ogImage = '/og-image.png' } = Astro.props;
+const pageTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
+const canonicalURL = new URL(Astro.url.pathname, SITE_URL).href;
+const ogImageURL = new URL(ogImage, SITE_URL).href;
 const path = Astro.url.pathname;
+
 const links = [
   { href: '/', label: '首页' },
   { href: '/blog', label: '文章' },
   { href: '/tags', label: '标签' },
   { href: '/about', label: '关于' },
-  { href: '/admin', label: '管理' },
 ];
 ---
 
@@ -24,14 +28,30 @@ const links = [
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
+    <title>{pageTitle}</title>
+    <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title === SITE_TITLE ? title : `${title} · ${SITE_TITLE}`}</title>
+    <link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href="/rss.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_TITLE} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:locale" content="zh_CN" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
   </head>
   <body>
+    <a class="skip-link" href="#main">跳到正文</a>
     <header class="site-header">
-      <div class="wrap">
+      <div class="wrap header-inner">
         <a class="brand" href="/">{SITE_TITLE}</a>
-        <nav class="nav">
+        <nav class="nav" aria-label="主导航">
           {links.map((link) => (
             <a
               href={link.href}
@@ -43,12 +63,17 @@ const links = [
         </nav>
       </div>
     </header>
-    <main class="wrap">
+    <main id="main" class="wrap">
       <slot />
     </main>
     <footer class="site-footer">
-      <div class="wrap">
-        © {new Date().getFullYear()} {SITE_TITLE} · <a href="/rss.xml">RSS</a>
+      <div class="wrap footer-inner">
+        <span>© {new Date().getFullYear()} {AUTHOR} · {SITE_TITLE}</span>
+        <span class="footer-links">
+          <a href="/rss.xml">RSS</a>
+          <a href="/sitemap.xml">站点地图</a>
+          <a href="/admin" rel="nofollow">管理</a>
+        </span>
       </div>
     </footer>
   </body>

@@ -14,18 +14,17 @@ Astro 静态博客 + Sveltia CMS 后台。前台和后台都在 Cloudflare Pages
 
 ## 首次上线
 
-1. 在 GitHub 新建私有仓库 `personal-blog`，**不要**勾选初始化 README
-2. 把本项目全部文件推到 `main` 分支
-3. Cloudflare 面板 → Workers & Pages → Create → Pages → Connect to Git
-4. 选仓库 `zh-simon/personal-blog`，构建命令 `npm run build`，输出目录 `dist`
-5. 打开 `https://personal-blog.pages.dev` 看前台，加 `/admin` 看后台
+1. GitHub 仓库 `zh-simon/wordfo-blog`（已完成）
+2. Cloudflare 面板 → Workers & Pages → Create → Pages → Connect to Git
+3. 选仓库 `zh-simon/wordfo-blog`，构建命令 `npm run build`，输出目录 `dist`
+5. 打开 `https://wordfo.pages.dev` 看前台，加 `/admin` 看后台
 6. 按下节生成 GitHub 令牌，粘贴到 `/admin` 登录页
 
 ## 生成 GitHub 令牌
 
 1. GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
 2. Generate new token：名称随意，过期时间建议 90 天
-3. Repository access → Only select repositories → 只勾 `personal-blog`
+3. Repository access → Only select repositories → 只勾 `wordfo-blog`
 4. Permissions → Repository permissions → **Contents: Read and write**（Metadata 只读会自动带上）
 5. Generate token，复制保存
 6. 打开 `/admin`，选「Sign In Using Access Token」，粘贴登录
