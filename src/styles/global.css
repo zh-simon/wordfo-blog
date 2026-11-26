@@ -4,7 +4,13 @@
   --fg: #1f2328;
   --muted: #656d76;
   --border: #e5e7eb;
-  --accent: #0969da;
+  --accent: #0f6e56;
+  --accent-soft: #cfe6dc;
+  --cloud-1: #0f6e56;
+  --cloud-2: #1d8a6e;
+  --cloud-3: #3a9e85;
+  --cloud-4: #5bb096;
+  --cloud-5: #7cc4ad;
   --code-bg: #f6f8fa;
   --max: 988px;
   --side: 188px;
@@ -12,11 +18,17 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0d1117;
+    --bg: #0e1412;
     --fg: #e6edf3;
     --muted: #9198a1;
     --border: #30363d;
-    --accent: #58a6ff;
+    --accent: #5fd0a8;
+    --accent-soft: #2a4a3f;
+    --cloud-1: #5fd0a8;
+    --cloud-2: #4fbe98;
+    --cloud-3: #3fac88;
+    --cloud-4: #86d9bb;
+    --cloud-5: #a8e5cf;
     --code-bg: #161b22;
   }
 }
@@ -57,7 +69,7 @@ a:hover { text-decoration: underline; }
 .site-header {
   flex: 0 0 auto;
   background: var(--bg);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 3px solid var(--accent);
 }
 .header-inner {
   display: flex;
@@ -79,7 +91,7 @@ a:hover { text-decoration: underline; }
   letter-spacing: 0.08em;
   margin: 0 0 0.65rem;
   padding-bottom: 0.4rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--accent-soft);
 }
 .side-about { color: var(--muted); margin: 0 0 0.4rem; line-height: 1.7; }
 .side-more { font-size: 0.85rem; }
@@ -87,7 +99,7 @@ a:hover { text-decoration: underline; }
 .side-list li { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.22rem 0; }
 .side-list a { color: var(--fg); }
 .side-list a:hover { color: var(--accent); text-decoration: none; }
-.side-count { color: var(--muted); font-variant-numeric: tabular-nums; }
+.side-count { color: var(--accent); font-variant-numeric: tabular-nums; }
 
 .word-cloud { position: relative; width: 100%; max-width: 184px; height: 124px; }
 .cloud-tag {
@@ -118,7 +130,7 @@ a:hover { text-decoration: underline; }
 .post-line { display: flex; align-items: baseline; gap: 0.75rem; }
 .post-date {
   flex: 0 0 5.1rem;
-  color: var(--muted);
+  color: var(--accent);
   font-size: 0.82rem;
   font-variant-numeric: tabular-nums;
 }
@@ -160,6 +172,7 @@ a:hover { text-decoration: underline; }
 .article-header { border-bottom: 1px solid var(--border); margin-bottom: 2rem; padding-bottom: 1.4rem; }
 .article-header h1 { font-size: 2rem; line-height: 1.35; margin: 0 0 0.7rem; letter-spacing: -0.02em; }
 .article-meta { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; color: var(--muted); font-size: 0.85rem; }
+.article-meta time { color: var(--accent); }
 .article-body { font-size: 1rem; line-height: 1.9; }
 .article-body p { margin: 1.1em 0; }
 .article-body h2 { margin-top: 2.25rem; font-size: 1.4rem; letter-spacing: -0.01em; }

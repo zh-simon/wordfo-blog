@@ -67,8 +67,8 @@ const CLOUD_H = 124;
 const SIZES = [30, 24, 20, 17, 15, 13, 12, 11, 10, 9];
 // 部分词竖排、部分轻微倾斜，错落而不散乱
 const ANGLES = [0, -90, 0, 90, 0, -8, 6, 0, -5, 0];
-// 低饱和配色，深浅主题下都能看清
-const COLORS = ['#2e7d5b', '#a63d40', '#8a6d3b', '#3a6ea5', '#6b4c9a', '#2e7d5b', '#a63d40', '#8a6d3b', '#3a6ea5', '#6b4c9a'];
+// 墨绿同色系深浅，用 CSS 变量以适配深浅主题（见 global.css --cloud-N）
+const COLORS = [1, 2, 3, 4, 5, 1, 2, 3, 4, 5];
 
 export function getWordCloud(posts: CollectionEntry<'posts'>[]): CloudWord[] {
   const keywords = getKeywords(posts);
@@ -78,38 +78,47 @@ export function getWordCloud(posts: CollectionEntry<'posts'>[]): CloudWord[] {
   let seed = 20261126;
   const rand = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
 
-  const placed: (CloudWord & { w: number; h: number })[] = [];
+  // 视觉框用于碰撞，CSS 定位框（left/top）用于渲染，两者因旋转并不相同
+  const placed: { vx: number; vy: number; vw: number; vh: number }[] = [];
+  const result: CloudWord[] = [];
 
   keywords.forEach(([word, count], rank) => {
     const size = SIZES[rank];
     const rotate = ANGLES[rank];
-    const rad = Math.abs(rotate) * Math.PI / 180;
     const vertical = Math.abs(rotate) === 90;
-    // 旋转后的外接矩形：竖排时宽高互换
-    const w = (vertical ? size * 1.2 : word.length * size * 0.94) + 1;
-    const h = (vertical ? word.length * size * 0.94 : size * 1.2) + 1;
 
-    let best = { x: 0, y: 0, score: Infinity };
-    for (let attempt = 0; attempt < 600; attempt++) {
-      const x = Math.floor(rand() * Math.max(1, CLOUD_W - w));
-      const y = Math.floor(rand() * Math.max(1, CLOUD_H - h));
+    // CSS 未旋转盒子：left/top 指它的左上角。估算略收紧，保留轻微交叠让词云更紧凑
+    const boxW = word.length * size * 0.94 + 2;
+    const boxH = size * 1.18 + 2;
+    // 旋转后的视觉外接框：竖排时宽高互换
+    const vw = vertical ? boxH : boxW;
+    const vh = vertical ? boxW : boxH;
+
+    let best = { vx: 0, vy: 0, score: Infinity };
+    for (let attempt = 0; attempt < 800; attempt++) {
+      const vx = Math.floor(rand() * Math.max(1, CLOUD_W - vw));
+      const vy = Math.floor(rand() * Math.max(1, CLOUD_H - vh));
       let overlap = 0;
       for (const p of placed) {
-        const ox = Math.max(0, Math.min(x + w, p.x + p.w) - Math.max(x, p.x));
-        const oy = Math.max(0, Math.min(y + h, p.y + p.h) - Math.max(y, p.y));
+        const ox = Math.max(0, Math.min(vx + vw, p.vx + p.vw) - Math.max(vx, p.vx));
+        const oy = Math.max(0, Math.min(vy + vh, p.vy + p.vh) - Math.max(vy, p.vy));
         overlap += ox * oy;
       }
       // 零重叠是硬约束，其次越靠近中心越好，词才会真正挤成一团
       if (overlap > 0) continue;
-      const cx = x + w / 2 - CLOUD_W / 2;
-      const cy = y + h / 2 - CLOUD_H / 2;
+      const cx = vx + vw / 2 - CLOUD_W / 2;
+      const cy = vy + vh / 2 - CLOUD_H / 2;
       const score = cx * cx + cy * cy;
-      if (score < best.score) best = { x, y, score };
+      if (score < best.score) best = { vx, vy, score };
       if (Math.abs(cx) < 12 && Math.abs(cy) < 12) break;
     }
 
-    placed.push({ word, count, x: best.x, y: best.y, size, rotate, color: COLORS[rank], w, h });
+    // 旋转绕盒子中心：由视觉框左上角反推 CSS 的 left/top
+    const x = Math.round(best.vx + (vw - boxW) / 2);
+    const y = Math.round(best.vy + (vh - boxH) / 2);
+    placed.push({ vx: best.vx, vy: best.vy, vw, vh });
+    result.push({ word, count, x, y, size, rotate, color: COLORS[rank] });
   });
 
-  return placed;
+  return result;
 }
