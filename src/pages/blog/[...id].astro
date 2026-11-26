@@ -24,7 +24,9 @@ const { Content } = await render(post);
   <article class="article">
     <header class="article-header">
       <div class="article-meta">
-        <a href={`/categories/${encodeURIComponent(post.data.category)}/`}>{post.data.category}</a>
+        {post.data.category && (
+          <a href={`/categories/${encodeURIComponent(post.data.category)}/`}>{post.data.category}</a>
+        )}
         <time datetime={post.data.pubDate.toISOString().slice(0, 10)}>
           {formatDate(post.data.pubDate)}
         </time>

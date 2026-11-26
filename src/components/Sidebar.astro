@@ -1,11 +1,12 @@
 ---
 import { getPublishedPosts, countBy } from '../lib/posts';
+import { getKeywords } from '../lib/keywords';
 import { SITE_DESCRIPTION } from '../consts';
 
 const posts = await getPublishedPosts();
-const categories = countBy(posts, (post) => [post.data.category]);
-const tags = countBy(posts, (post) => post.data.tags);
-const maxCount = tags.length > 0 ? tags[0][1] : 1;
+const categories = countBy(posts, (post) => (post.data.category ? [post.data.category] : []));
+const keywords = getKeywords(posts);
+const maxCount = keywords.length > 0 ? keywords[0][1] : 1;
 ---
 
 <aside class="sidebar" aria-label="站点侧栏">
@@ -29,17 +30,13 @@ const maxCount = tags.length > 0 ? tags[0][1] : 1;
     </section>
   )}
 
-  {tags.length > 0 && (
+  {keywords.length > 0 && (
     <section class="side-block">
       <h2 class="side-title">词云</h2>
       <div class="word-cloud">
-        {tags.map(([name, count]) => {
+        {keywords.map(([word, count]) => {
           const level = count === maxCount ? 3 : count >= 2 ? 2 : 1;
-          return (
-            <a class={`cloud-tag s${level}`} href={`/tags/${encodeURIComponent(name)}/`}>
-              {name}
-            </a>
-          );
+          return <span class={`cloud-tag s${level}`} title={`出现在 ${count} 篇文章`}>{word}</span>;
         })}
       </div>
     </section>
