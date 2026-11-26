@@ -23,5 +23,5 @@ const { tag, posts } = Astro.props;
   <ul class="post-list">
     {posts.map((post) => <PostCard post={post} />)}
   </ul>
-  <p style="margin-top:2rem;"><a class="back-link" href="/tags/">← 全部标签</a></p>
+  <p class="back-line"><a class="back-link" href="/tags/">← 全部标签</a></p>
 </BaseLayout>

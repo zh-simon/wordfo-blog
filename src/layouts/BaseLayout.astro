@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL, AUTHOR } from '../consts';
+import Sidebar from '../components/Sidebar.astro';
 
 interface Props {
   title?: string;
@@ -16,9 +17,10 @@ const path = Astro.url.pathname;
 
 const links = [
   { href: '/', label: '首页' },
-  { href: '/blog', label: '文章' },
-  { href: '/tags', label: '标签' },
-  { href: '/about', label: '关于' },
+  { href: '/blog/', label: '文章' },
+  { href: '/categories/', label: '分类' },
+  { href: '/tags/', label: '标签' },
+  { href: '/about/', label: '关于' },
 ];
 ---
 
@@ -28,6 +30,7 @@ const links = [
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <meta name="referrer" content="no-referrer" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)" />
     <title>{pageTitle}</title>
@@ -63,9 +66,14 @@ const links = [
         </nav>
       </div>
     </header>
-    <main id="main" class="wrap">
-      <slot />
-    </main>
+
+    <div class="wrap page-layout">
+      <main id="main" class="content">
+        <slot />
+      </main>
+      <Sidebar />
+    </div>
+
     <footer class="site-footer">
       <div class="wrap footer-inner">
         <span>© {new Date().getFullYear()} {AUTHOR} · {SITE_TITLE}</span>

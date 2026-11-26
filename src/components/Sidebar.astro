@@ -1,0 +1,51 @@
+---
+import { getPublishedPosts, countBy } from '../lib/posts';
+import { SITE_DESCRIPTION } from '../consts';
+
+const posts = await getPublishedPosts();
+const categories = countBy(posts, (post) => [post.data.category]);
+const tags = countBy(posts, (post) => post.data.tags);
+---
+
+<aside class="sidebar" aria-label="站点侧栏">
+  <section class="side-block">
+    <h2 class="side-title">关于</h2>
+    <p class="side-about">{SITE_DESCRIPTION}</p>
+    <a class="side-more" href="/about/">了解更多 →</a>
+  </section>
+
+  {categories.length > 0 && (
+    <section class="side-block">
+      <h2 class="side-title">分类</h2>
+      <ul class="side-list">
+        {categories.map(([name, count]) => (
+          <li>
+            <a href={`/categories/${encodeURIComponent(name)}/`}>{name}</a>
+            <span class="side-count">{count}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {tags.length > 0 && (
+    <section class="side-block">
+      <h2 class="side-title">标签</h2>
+      <div class="side-tags">
+        {tags.map(([name, count]) => (
+          <a href={`/tags/${encodeURIComponent(name)}/`}>
+            {name}<span>{count}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section class="side-block">
+    <h2 class="side-title">订阅</h2>
+    <ul class="side-list">
+      <li><a href="/rss.xml">RSS</a></li>
+      <li><a href="/sitemap.xml">站点地图</a></li>
+    </ul>
+  </section>
+</aside>

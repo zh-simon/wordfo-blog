@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPublishedPosts, countBy } from '../../lib/posts';
+
+const posts = await getPublishedPosts();
+const categories = countBy(posts, (post) => [post.data.category]);
+---
+
+<BaseLayout title="分类" description="按分类浏览全部文章">
+  <section class="hero">
+    <h1>分类</h1>
+    <p>{categories.length} 个分类</p>
+  </section>
+  {categories.length > 0 ? (
+    <div class="index-grid">
+      {categories.map(([name, count]) => (
+        <a class="index-cell" href={`/categories/${encodeURIComponent(name)}/`}>
+          <span>{name}</span>
+          <span class="index-count">{count}</span>
+        </a>
+      ))}
+    </div>
+  ) : (
+    <p class="empty">还没有分类。</p>
+  )}
+</BaseLayout>
