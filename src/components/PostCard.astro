@@ -17,14 +17,15 @@ const { post } = Astro.props;
     <h2 class="post-title">
       <a href={`/blog/${post.id}/`}>{post.data.title}</a>
     </h2>
-    <span class="post-category">{post.data.category}</span>
   </div>
-  {post.data.description && <p class="post-desc">{post.data.description}</p>}
-  {post.data.tags.length > 0 && (
-    <div class="post-tags">
-      {post.data.tags.map((tag) => (
-        <a class="tag" href={`/tags/${encodeURIComponent(tag)}/`}>#{tag}</a>
-      ))}
-    </div>
-  )}
+  <div class="post-foot">
+    {post.data.description && <p class="post-desc">{post.data.description}</p>}
+    {post.data.tags.length > 0 && (
+      <div class="post-tags">
+        {post.data.tags.map((tag) => (
+          <a class="tag" href={`/tags/${encodeURIComponent(tag)}/`}>#{tag}</a>
+        ))}
+      </div>
+    )}
+  </div>
 </li>

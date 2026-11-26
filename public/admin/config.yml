@@ -17,7 +17,7 @@ collections:
     fields:
       - { label: 标题, name: title, widget: string }
       - { label: 摘要, name: description, widget: text }
-      - { label: 分类, name: category, widget: string, default: 随笔 }
+      - { label: 分类, name: category, widget: string, default: 随笔, hint: "文章归类，如：随笔 / 商务关系。同名分类会自动聚合到右侧栏。" }
       - { label: 发布日期, name: pubDate, widget: datetime, type: date }
       - { label: 标签, name: tags, widget: list }
       - { label: 草稿, name: draft, widget: boolean, default: false }
