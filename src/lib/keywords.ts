@@ -52,52 +52,19 @@ export function getKeywords(posts: CollectionEntry<'posts'>[]): [string, number]
 export interface CloudWord {
   word: string;
   count: number;
-  x: number;
-  y: number;
   size: number;
   rotate: number;
 }
 
-const CLOUD_W = 184;
-const CLOUD_H = 214;
-
-// 名次越高字号越大；角度只给部分词，避免整片歪斜
-const SIZES = [25, 21, 21, 17, 17, 14, 14, 12, 12, 11];
-const ANGLES = [0, -11, 8, 0, -7, 12, 0, -9, 6, 0];
+// 名次越高字号越大；角度轻微，保证词能紧贴在一起
+const SIZES = [17, 15, 14, 13, 12, 12, 11, 11, 10, 10];
+const ANGLES = [0, -5, 4, 0, -4, 5, 0, -3, 3, 0];
 
 export function getWordCloud(posts: CollectionEntry<'posts'>[]): CloudWord[] {
-  const keywords = getKeywords(posts);
-  if (keywords.length === 0) return [];
-
-  // 固定种子伪随机：每次构建得到同样的布局，便于复现
-  let seed = 20261126;
-  const rand = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
-
-  const placed: (CloudWord & { w: number; h: number })[] = [];
-
-  keywords.forEach(([word, count], rank) => {
-    const size = SIZES[rank];
-    const rotate = ANGLES[rank];
-    const rad = Math.abs(rotate) * Math.PI / 180;
-    const w = word.length * size * Math.cos(rad) + size * Math.sin(rad) + 8;
-    const h = size * 1.25 + word.length * size * Math.sin(rad) * 0.3 + 6;
-
-    let best = { x: 0, y: 0, overlap: Infinity };
-    for (let attempt = 0; attempt < 260; attempt++) {
-      const x = Math.floor(rand() * Math.max(1, CLOUD_W - w));
-      const y = Math.floor(rand() * Math.max(1, CLOUD_H - h));
-      let overlap = 0;
-      for (const p of placed) {
-        const ox = Math.max(0, Math.min(x + w, p.x + p.w) - Math.max(x, p.x));
-        const oy = Math.max(0, Math.min(y + h, p.y + p.h) - Math.max(y, p.y));
-        overlap += ox * oy;
-      }
-      if (overlap < best.overlap) best = { x, y, overlap };
-      if (overlap === 0) break;
-    }
-
-    placed.push({ word, count, x: best.x, y: best.y, size, rotate, w, h });
-  });
-
-  return placed;
+  return getKeywords(posts).map(([word, count], rank) => ({
+    word,
+    count,
+    size: SIZES[rank],
+    rotate: ANGLES[rank],
+  }));
 }
