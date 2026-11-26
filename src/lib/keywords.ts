@@ -15,12 +15,24 @@ function tokenize(text: string): string[] {
   return text.match(/[\u4e00-\u9fa5]{2,4}/g) ?? [];
 }
 
+// 去掉图片、链接与 Markdown 标记后，中文不足 4 字的文章视为没有正文
+function hasBody(raw: string): boolean {
+  const plain = raw
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/[#*`>_~\[\]()!|]/g, '');
+  return (plain.match(/[\u4e00-\u9fa5]/g) ?? []).length >= 4;
+}
+
 export function getKeywords(posts: CollectionEntry<'posts'>[]): [string, number][] {
   const counts = new Map<string, number>();
 
   for (const post of posts) {
+    const raw = post.body ?? '';
+    if (!hasBody(raw)) continue;
+
     const seen = new Set<string>();
-    for (const word of tokenize(post.body ?? '')) {
+    for (const word of tokenize(raw)) {
       if (!/^[\u4e00-\u9fa5]{2,4}$/.test(word)) continue;
       if (/^[一十][\u4e00-\u9fa5]{1,2}$/.test(word)) continue; // 一半、一张、十句等量词组合
       if (STOP.has(word)) continue;
@@ -34,5 +46,58 @@ export function getKeywords(posts: CollectionEntry<'posts'>[]): [string, number]
 
   return [...counts.entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .slice(0, 24);
+    .slice(0, 10);
+}
+
+export interface CloudWord {
+  word: string;
+  count: number;
+  x: number;
+  y: number;
+  size: number;
+  rotate: number;
+}
+
+const CLOUD_W = 184;
+const CLOUD_H = 214;
+
+// 名次越高字号越大；角度只给部分词，避免整片歪斜
+const SIZES = [25, 21, 21, 17, 17, 14, 14, 12, 12, 11];
+const ANGLES = [0, -11, 8, 0, -7, 12, 0, -9, 6, 0];
+
+export function getWordCloud(posts: CollectionEntry<'posts'>[]): CloudWord[] {
+  const keywords = getKeywords(posts);
+  if (keywords.length === 0) return [];
+
+  // 固定种子伪随机：每次构建得到同样的布局，便于复现
+  let seed = 20261126;
+  const rand = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+
+  const placed: (CloudWord & { w: number; h: number })[] = [];
+
+  keywords.forEach(([word, count], rank) => {
+    const size = SIZES[rank];
+    const rotate = ANGLES[rank];
+    const rad = Math.abs(rotate) * Math.PI / 180;
+    const w = word.length * size * Math.cos(rad) + size * Math.sin(rad) + 8;
+    const h = size * 1.25 + word.length * size * Math.sin(rad) * 0.3 + 6;
+
+    let best = { x: 0, y: 0, overlap: Infinity };
+    for (let attempt = 0; attempt < 260; attempt++) {
+      const x = Math.floor(rand() * Math.max(1, CLOUD_W - w));
+      const y = Math.floor(rand() * Math.max(1, CLOUD_H - h));
+      let overlap = 0;
+      for (const p of placed) {
+        const ox = Math.max(0, Math.min(x + w, p.x + p.w) - Math.max(x, p.x));
+        const oy = Math.max(0, Math.min(y + h, p.y + p.h) - Math.max(y, p.y));
+        overlap += ox * oy;
+      }
+      if (overlap < best.overlap) best = { x, y, overlap };
+      if (overlap === 0) break;
+    }
+
+    placed.push({ word, count, x: best.x, y: best.y, size, rotate, w, h });
+  });
+
+  return placed;
 }

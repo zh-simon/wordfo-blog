@@ -1,12 +1,11 @@
 ---
 import { getPublishedPosts, countBy } from '../lib/posts';
-import { getKeywords } from '../lib/keywords';
+import { getWordCloud } from '../lib/keywords';
 import { SIDE_ABOUT } from '../consts';
 
 const posts = await getPublishedPosts();
 const categories = countBy(posts, (post) => (post.data.category ? [post.data.category] : []));
-const keywords = getKeywords(posts);
-const maxCount = keywords.length > 0 ? keywords[0][1] : 1;
+const words = getWordCloud(posts);
 ---
 
 <aside class="sidebar" aria-label="站点侧栏">
@@ -30,14 +29,17 @@ const maxCount = keywords.length > 0 ? keywords[0][1] : 1;
     </section>
   )}
 
-  {keywords.length > 0 && (
+  {words.length > 0 && (
     <section class="side-block">
       <h2 class="side-title">词云</h2>
       <div class="word-cloud">
-        {keywords.map(([word, count]) => {
-          const level = count === maxCount ? 3 : count >= 2 ? 2 : 1;
-          return <span class={`cloud-tag s${level}`} title={`出现在 ${count} 篇文章`}>{word}</span>;
-        })}
+        {words.map((w) => (
+          <span
+            class="cloud-tag"
+            title={`出现在 ${w.count} 篇文章`}
+            style={`left:${w.x}px;top:${w.y}px;font-size:${w.size}px;transform:rotate(${w.rotate}deg)${w.size >= 21 ? ';color:var(--fg);font-weight:600' : ''}`}
+          >{w.word}</span>
+        ))}
       </div>
     </section>
   )}

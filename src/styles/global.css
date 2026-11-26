@@ -88,11 +88,14 @@ a:hover { text-decoration: underline; }
 .side-list a:hover { color: var(--accent); text-decoration: none; }
 .side-count { color: var(--muted); font-variant-numeric: tabular-nums; }
 
-.word-cloud { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.65rem; }
-.cloud-tag { color: var(--muted); line-height: 1.4; }
-.cloud-tag.s1 { font-size: 0.8rem; }
-.cloud-tag.s2 { font-size: 0.92rem; }
-.cloud-tag.s3 { font-size: 1.05rem; font-weight: 600; color: var(--fg); }
+.word-cloud { position: relative; width: 100%; max-width: 220px; height: 220px; }
+.cloud-tag {
+  position: absolute;
+  white-space: nowrap;
+  line-height: 1.15;
+  color: var(--muted);
+  transform-origin: center center;
+}
 
 .site-footer {
   border-top: 1px solid var(--border);

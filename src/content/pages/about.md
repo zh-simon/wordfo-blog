@@ -1,6 +1,6 @@
 ---
 title: 关于
-description: 关于这个博客。
+description: 关于这个博客和它的主人。
 ---
 
 你好，我是阿永。
