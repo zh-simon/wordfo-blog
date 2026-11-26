@@ -88,19 +88,11 @@ a:hover { text-decoration: underline; }
 .side-list a:hover { color: var(--accent); text-decoration: none; }
 .side-count { color: var(--muted); font-variant-numeric: tabular-nums; }
 
-.word-cloud {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  align-content: flex-start;
-  gap: 1px 4px;
-  width: 100%;
-  max-width: 184px;
-}
+.word-cloud { position: relative; width: 100%; max-width: 184px; height: 124px; }
 .cloud-tag {
+  position: absolute;
   white-space: nowrap;
   line-height: 1.15;
-  color: var(--muted);
   transform-origin: center center;
 }
 

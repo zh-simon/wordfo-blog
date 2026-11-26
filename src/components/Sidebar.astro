@@ -37,7 +37,7 @@ const words = getWordCloud(posts);
           <span
             class="cloud-tag"
             title={`出现在 ${w.count} 篇文章`}
-            style={`font-size:${w.size}px;transform:rotate(${w.rotate}deg)${w.size >= 15 ? ';color:var(--fg);font-weight:600' : ''}`}
+            style={`left:${w.x}px;top:${w.y}px;font-size:${w.size}px;color:${w.color};transform:rotate(${w.rotate}deg)${w.size >= 20 ? ';font-weight:700' : w.size >= 15 ? ';font-weight:600' : ''}`}
           >{w.word}</span>
         ))}
       </div>

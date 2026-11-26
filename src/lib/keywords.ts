@@ -52,19 +52,64 @@ export function getKeywords(posts: CollectionEntry<'posts'>[]): [string, number]
 export interface CloudWord {
   word: string;
   count: number;
+  x: number;
+  y: number;
   size: number;
   rotate: number;
+  color: number;
 }
 
-// 名次越高字号越大；角度轻微，保证词能紧贴在一起
-const SIZES = [17, 15, 14, 13, 12, 12, 11, 11, 10, 10];
-const ANGLES = [0, -5, 4, 0, -4, 5, 0, -3, 3, 0];
+// 紧凑画布：宽度贴住侧栏，高度压成一个更扁的矩形块
+const CLOUD_W = 184;
+const CLOUD_H = 124;
+
+// 字号跨度拉大，形成大小分明的层次
+const SIZES = [30, 24, 20, 17, 15, 13, 12, 11, 10, 9];
+// 部分词竖排、部分轻微倾斜，错落而不散乱
+const ANGLES = [0, -90, 0, 90, 0, -8, 6, 0, -5, 0];
+// 低饱和配色，深浅主题下都能看清
+const COLORS = ['#2e7d5b', '#a63d40', '#8a6d3b', '#3a6ea5', '#6b4c9a', '#2e7d5b', '#a63d40', '#8a6d3b', '#3a6ea5', '#6b4c9a'];
 
 export function getWordCloud(posts: CollectionEntry<'posts'>[]): CloudWord[] {
-  return getKeywords(posts).map(([word, count], rank) => ({
-    word,
-    count,
-    size: SIZES[rank],
-    rotate: ANGLES[rank],
-  }));
+  const keywords = getKeywords(posts);
+  if (keywords.length === 0) return [];
+
+  // 固定种子伪随机，构建可复现
+  let seed = 20261126;
+  const rand = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+
+  const placed: (CloudWord & { w: number; h: number })[] = [];
+
+  keywords.forEach(([word, count], rank) => {
+    const size = SIZES[rank];
+    const rotate = ANGLES[rank];
+    const rad = Math.abs(rotate) * Math.PI / 180;
+    const vertical = Math.abs(rotate) === 90;
+    // 旋转后的外接矩形：竖排时宽高互换
+    const w = (vertical ? size * 1.2 : word.length * size * 0.94) + 1;
+    const h = (vertical ? word.length * size * 0.94 : size * 1.2) + 1;
+
+    let best = { x: 0, y: 0, score: Infinity };
+    for (let attempt = 0; attempt < 600; attempt++) {
+      const x = Math.floor(rand() * Math.max(1, CLOUD_W - w));
+      const y = Math.floor(rand() * Math.max(1, CLOUD_H - h));
+      let overlap = 0;
+      for (const p of placed) {
+        const ox = Math.max(0, Math.min(x + w, p.x + p.w) - Math.max(x, p.x));
+        const oy = Math.max(0, Math.min(y + h, p.y + p.h) - Math.max(y, p.y));
+        overlap += ox * oy;
+      }
+      // 零重叠是硬约束，其次越靠近中心越好，词才会真正挤成一团
+      if (overlap > 0) continue;
+      const cx = x + w / 2 - CLOUD_W / 2;
+      const cy = y + h / 2 - CLOUD_H / 2;
+      const score = cx * cx + cy * cy;
+      if (score < best.score) best = { x, y, score };
+      if (Math.abs(cx) < 12 && Math.abs(cy) < 12) break;
+    }
+
+    placed.push({ word, count, x: best.x, y: best.y, size, rotate, color: COLORS[rank], w, h });
+  });
+
+  return placed;
 }
