@@ -1,10 +1,7 @@
 ---
 import '../styles/global.css';
-import { getCollection } from 'astro:content';
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL, AUTHOR } from '../consts';
 import Sidebar from '../components/Sidebar.astro';
-
-const pages = await getCollection('pages');
 
 interface Props {
   title?: string;
@@ -16,14 +13,6 @@ const { title, description = SITE_DESCRIPTION, ogImage = '/og-image.png' } = Ast
 const pageTitle = title ? `${title} · ${SITE_TITLE}` : SITE_TITLE;
 const canonicalURL = new URL(Astro.url.pathname, SITE_URL).href;
 const ogImageURL = new URL(ogImage, SITE_URL).href;
-const path = Astro.url.pathname;
-
-// 分类、标签、订阅都在右侧栏，顶部只保留主入口和后台自建页面
-const links = [
-  { href: '/', label: '首页' },
-  { href: '/blog/', label: '文章' },
-  ...pages.map((page) => ({ href: `/${page.id}/`, label: page.data.title })),
-];
 ---
 
 <!doctype html>
@@ -56,16 +45,6 @@ const links = [
     <header class="site-header">
       <div class="wrap header-inner">
         <a class="brand" href="/">{SITE_TITLE}</a>
-        <nav class="nav" aria-label="主导航">
-          {links.map((link) => (
-            <a
-              href={link.href}
-              aria-current={path === link.href || (link.href !== '/' && path.startsWith(link.href)) ? 'page' : undefined}
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
       </div>
     </header>
 
