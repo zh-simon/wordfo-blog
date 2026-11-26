@@ -1,7 +1,10 @@
 ---
 import '../styles/global.css';
+import { getCollection } from 'astro:content';
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL, AUTHOR } from '../consts';
 import Sidebar from '../components/Sidebar.astro';
+
+const pages = await getCollection('pages');
 
 interface Props {
   title?: string;
@@ -20,7 +23,7 @@ const links = [
   { href: '/blog/', label: '文章' },
   { href: '/categories/', label: '分类' },
   { href: '/tags/', label: '标签' },
-  { href: '/about/', label: '关于' },
+  ...pages.map((page) => ({ href: `/${page.id}/`, label: page.data.title })),
 ];
 ---
 
